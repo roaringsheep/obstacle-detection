@@ -10,4 +10,4 @@ npm start
 It will be hosted on localhost:8080
 
 ### Development
-`npm devstart` will boot up the server with nodemon, which will automatically restart server when it detects a file change.
+`nodemon app.js` will boot up the server with nodemon, which will automatically restart server when it detects a file change.

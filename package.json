@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "start": "node app.js",
-    "devstart": "nodemon app.js"
   },
   "dependencies": {
     "node-static": "^0.7.6",
