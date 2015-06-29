@@ -32,16 +32,14 @@ var y = d3.scale.linear()
     .domain([0, height])
     .range([height, 0]);
 
-var corners = [], currCorner, index = 0, inrange;
-
 var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height)
     .append("g")
     .call(d3.behavior.zoom().x(x).y(y).scale(1).scaleExtent([1, 1])
-    .on("zoom", function() { index += 1; currCorner = d3.event.translate; if(index%1 === 0) zoom(arguments); }));
+    .on("zoom", zoom));
 
-var rect = svg.append("rect")
+svg.append("rect")
     .attr("class", "overlay")
     .attr("width", width)
     .attr("height", height);
@@ -52,44 +50,62 @@ var circle = svg.selectAll("circle")
     .attr("r", radius)
     .attr("transform", transform);
 
-var centerPt = [], 
+var currCorner, 
+    centerPt = [], 
     viewBox = [], 
     detectionBox = [], 
+    inrange = [], 
     howmany,
     region;
 
-function zoom() {
-  inrange = [];
+function createWarnings(currCorner) {
+  circle.data().forEach(function(datum) {
+    if (inTheBox(datum, detectionBox) && !inTheBox(datum, viewBox)) {
+      inrange.push(makeWarningData(datum, currCorner, findRegion(datum, viewBox)));
+      howmany++;
+    }
+  });
+}
+
+function zoom() {  
+  inrange.length = 0;
+
+  svg.selectAll("ellipse")
+    .data(inrange)
+    .exit().remove();
+
   howmany = 0;
-  centerPt= [currCorner[0] + (width/2), currCorner[1] + (height/2), radius];
+  currCorner = d3.event.translate;
+  centerPt = [currCorner[0] + (width/2), currCorner[1] + (height/2), radius];
   data[data.length - 1] = centerPt;
   viewBox = [[centerPt[0] - (width/2) - radius, centerPt[0] + (width/2) + radius], [centerPt[1] - (height/2) - radius, centerPt[1] + (height/2) + radius]];
   var smallBox = [[centerPt[0] - 50, centerPt[0] + 50], [centerPt[1] - 50, centerPt[1] + 50]];
   detectionBox = [[centerPt[0] - (width + radius), centerPt[0] + (width + radius)],[centerPt[1] - (height + radius), centerPt[1] + (height + radius)]];
   circle.data(data).enter().append("circle");
 
-  circle.data().forEach(function(datum) {
-    if(inTheBox(datum, detectionBox) && !inTheBox(datum, viewBox)) {
-      inrange.push(makeWarningData(datum, [viewBox[0][0], viewBox[1][0]], findRegion(datum, viewBox)));
-      howmany++;
-    }
-  });
+  createWarnings(currCorner);
 
-  var warnings = svg.selectAll("ellipse").data([]).exit().remove();
+  // red dots
+  svg.selectAll("ellipse")
+    .data(inrange)
+    .enter().append("ellipse")
+    .attr("transform", transform)
+    .attr("rx", 5)
+    .attr("ry", 5)
+    .style("fill", "red");
 
-  warnings.data(inrange).enter().append("ellipse")
-  .attr("transform", transform)
-  .attr("rx", 5)
-  .attr("ry", 5)
-  .style("fill", "red");
-
+  // obstacle selections
   circle.attr("transform", transform);
 }
 
-
 function makeWarningData (point, currCorner, region) {
-  var x = point[0], y = point[1], x0 = currCorner[0], x1 = currCorner[0] + width, y0 = currCorner[1], y1 = currCorner[1] + height, warnPt;
-  switch(region) {
+  var x = point[0], 
+      y = point[1], 
+      x0 = currCorner[0], 
+      x1 = currCorner[0] + width, 
+      y0 = currCorner[1], 
+      y1 = currCorner[1] + height, warnPt;
+  switch (region) {
     case 'UpperRight': 
       warnPt = [x0 + 10, y1 - 10];
       break;
@@ -147,3 +163,10 @@ function transform(d, i) {
 
 circle.style("stroke", randomColor);
 circle.style("fill", randomColor);
+
+// function init() {
+//   createWarnings([0,0]);
+// }
+
+// init();
+
