@@ -40,10 +40,12 @@ var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height)
     .append("g")
+    .attr("class", "zoom-container")
     .call(d3.behavior.zoom().x(x).y(y).scale(1).scaleExtent([1, 1])
     .on("zoom", zoom));
 
-svg.append("rect")
+
+var rect = svg.append("rect")
     .attr("class", "overlay")
     .attr("width", width)
     .attr("height", height);
@@ -81,12 +83,12 @@ function createWarnings(currCorner) {
   });
 }
 
+var container, g;
+
 function zoom() {  
   inrange.length = 0;
 
-  svg.selectAll("ellipse")
-    .data(inrange)
-    .exit().remove();
+  svg.selectAll("g").data(inrange).exit().remove();
 
   howmany = 0;
   currCorner = d3.event.translate;
@@ -101,16 +103,66 @@ function zoom() {
   createWarnings(currCorner);
 
   // red dots
-  svg.selectAll("ellipse")
-    .data(inrange)
-    .enter().append("ellipse")
+  var container = svg.selectAll("g").data(inrange)
+    .enter().append("g")
     .attr("transform", transform)
-    .attr("rx", 5)
-    .attr("ry", 5)
-    .style("fill", "red");
+
+  container.append("ellipse")
+    .attr("rx", function(d) { return Math.min(2000/(d[2] + 1), 25);})
+    .attr("ry", function(d) { return Math.min(2000/(d[2] + 1), 25); })
+    .style("fill", "red")
+    .style("fill-opacity", .5);
+
+  container.append("text")
+    .attr("x", -4)
+    .attr("y", 3)
+    .attr("font-size", 10)
+    .text(function(d){ return parseInt(d[2]); })
+    .style("fill", "black");
 
   // obstacle selections
   circle.attr("transform", transform);
+}
+
+function calculateDistance(currCorner, circlePts) {
+  var x = circlePts[0],
+      y = circlePts[1],
+      centerX = currCorner[0] + (width/2),
+      centerY = currCorner[1] + (height/2),
+      viewBox = [[centerX - (width/2) - radius, centerX + (width/2) + radius], [centerY - (height/2) - radius, centerY + (height/2) + radius]],
+      distance = null;
+
+  var region = findRegion([x, y], viewBox);
+
+  switch (region) {
+    case 'UpperRight':
+      distance = Math.sqrt(Math.pow((viewBox[0][0] - x), 2) + Math.pow((viewBox[1][1] - y), 2));
+      break;
+    case 'UpperLeft':
+      distance = Math.sqrt(Math.pow((viewBox[0][1] - x), 2) + Math.pow((viewBox[1][1] - y), 2));
+      break;
+    case 'Up':
+      distance = Math.abs(viewBox[1][1] - y);
+      break;
+    case 'LowerRight':
+      distance = Math.sqrt(Math.pow((viewBox[0][0] - x), 2) + Math.pow((viewBox[1][0] - y), 2));
+      break;
+    case 'LowerLeft':
+      distance = Math.sqrt(Math.pow((viewBox[0][1] - x), 2) + Math.pow((viewBox[1][0] - y), 2));
+      break;
+    case 'Low':
+      distance = Math.abs(viewBox[1][0] - y);
+      break;
+    case 'Left':
+      distance = Math.abs(viewBox[0][1] - x);
+      break;
+    case 'Right':
+      distance = Math.abs(viewBox[0][0] - x);
+      break;
+    default: distance = null;
+  }
+
+  return distance;
 }
 
 function makeWarningData (point, currCorner, region) {
@@ -122,31 +174,32 @@ function makeWarningData (point, currCorner, region) {
       y1 = currCorner[1] + height, warnPt;
   switch (region) {
     case 'UpperRight': 
-      warnPt = [x0 + 10, y1 - 10];
+      warnPt = [x0 + 15, y1 - 15];
       break;
     case 'UpperLeft': 
-      warnPt = [x1 - 10, y1 - 10];
+      warnPt = [x1 - 15, y1 - 15];
       break;
     case 'Up': 
-      warnPt = [x, y1 - 10];
+      warnPt = [x, y1 - 15];
       break;
     case 'LowerRight':
-      warnPt = [x0 + 10, y0 + 10];
+      warnPt = [x0 + 15, y0 + 15];
       break;
     case 'LowerLeft':
-      warnPt = [x1 - 10, y0 + 10];
+      warnPt = [x1 - 15, y0 + 15];
       break;
     case 'Low': 
-      warnPt = [x, y0 + 10];
+      warnPt = [x, y0 + 15];
       break;
     case 'Left':
-      warnPt = [x1 - 10, y];
+      warnPt = [x1 - 15, y];
       break;
     case 'Right':
-      warnPt = [x0 + 10, y];
+      warnPt = [x0 + 15, y];
       break;
     default: warnPt = null;
   }
+  warnPt.push(calculateDistance(currCorner, point));
   return warnPt;
 }
 
