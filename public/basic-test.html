@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title></title></head>
+<!-- 
+  Stand alone example of running a spec against DOM manipulation.
+  Cribbed from: http://busypeoples.github.io/post/testing-d3-with-jasmine/
+-->
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jasmine/2.3.4/jasmine.css">
+<body>
+  <!-- test fixture -->
+  <div id="for-d3">
+  </div>
+
+  <!-- Jasmine -->
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jasmine/2.3.4/jasmine.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jasmine/2.3.4/jasmine-html.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jasmine/2.3.4/boot.js"></script>
+
+  <!-- Unit Dependencies -->
+  <script src="//d3js.org/d3.v3.min.js"></script>
+
+  <!-- Unit of interest -->
+  <script src="js/blankSvg.js"></script>
+
+  <!-- Unit Spec -->
+  <script src="specs/blankSvg.spec.js"></script>
+</body>
+</html>
