@@ -1,7 +1,7 @@
 "use strict";
 
 var randomColor = function(d, i) {
-  if(i == 49) return 'blue'; 
+  
   var hex = ['a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
   var color = "";
   while(color.length < 6) {
@@ -15,7 +15,11 @@ var randomX = function() { return parseInt(Math.random() * 3000); },
     randomY = function() { return parseInt(Math.random() * 3000); },
     randomR = function() { return parseInt(Math.random() *50); }
 
-var width = 960, height = 500, radius = 20;
+var width = 960,
+    height = 500,
+    radius = 20,
+    droneHeight = 50,
+    droneWidth = 50;
 
 var data = d3.range(50).map(function() {
   return [
@@ -50,6 +54,16 @@ var circle = svg.selectAll("circle")
     .attr("r", radius)
     .attr("transform", transform);
 
+var drone = svg.selectAll(".drone")
+    .data([width / 2, height / 2])
+    .enter().append("image")
+    .attr("transform","translate(" + (width / 2 - droneWidth / 2)+ "," + (height / 2 - droneHeight / 2) + ")")
+    .attr("xlink:href","./css/images/drone.png")
+    .attr("height", droneHeight + "px")
+    .attr("width", droneWidth + "px");
+
+
+
 var currCorner, 
     centerPt = [], 
     viewBox = [], 
@@ -76,12 +90,13 @@ function zoom() {
 
   howmany = 0;
   currCorner = d3.event.translate;
-  centerPt = [currCorner[0] + (width/2), currCorner[1] + (height/2), radius];
-  data[data.length - 1] = centerPt;
+  centerPt = [currCorner[0] + (width/2) -  droneWidth / 2, currCorner[1] + (height/2) - droneHeight / 2, radius];
   viewBox = [[centerPt[0] - (width/2) - radius, centerPt[0] + (width/2) + radius], [centerPt[1] - (height/2) - radius, centerPt[1] + (height/2) + radius]];
   var smallBox = [[centerPt[0] - 50, centerPt[0] + 50], [centerPt[1] - 50, centerPt[1] + 50]];
   detectionBox = [[centerPt[0] - (width + radius), centerPt[0] + (width + radius)],[centerPt[1] - (height + radius), centerPt[1] + (height + radius)]];
   circle.data(data).enter().append("circle");
+
+  drone.data(centerPt).enter().append("image");
 
   createWarnings(currCorner);
 
