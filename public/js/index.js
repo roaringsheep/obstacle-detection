@@ -64,8 +64,6 @@ var drone = svg.selectAll(".drone")
     .attr("height", droneHeight + "px")
     .attr("width", droneWidth + "px");
 
-
-
 var currCorner, 
     centerPt = [], 
     viewBox = [], 
@@ -76,7 +74,7 @@ var currCorner,
 
 function createWarnings(currCorner) {
   circle.data().forEach(function(datum) {
-    if (inTheBox(datum, detectionBox) && !inTheBox(datum, viewBox)) {
+    if (inTheBox(datum, detectionBox) && !inTheBox(datum, viewBox)) { 
       inrange.push(makeWarningData(datum, currCorner, findRegion(datum, viewBox)));
       howmany++;
     }
@@ -92,13 +90,14 @@ function zoom() {
 
   howmany = 0;
   currCorner = d3.event.translate;
-  centerPt = [currCorner[0] + (width/2) -  droneWidth / 2, currCorner[1] + (height/2) - droneHeight / 2, radius];
+  centerPt = [currCorner[0] + (width/2), currCorner[1] + (height/2), radius];
+  var dronePt = [centerPt[0] - droneWidth/2, centerPt[1] + droneHeight/2];
   viewBox = [[centerPt[0] - (width/2) - radius, centerPt[0] + (width/2) + radius], [centerPt[1] - (height/2) - radius, centerPt[1] + (height/2) + radius]];
   var smallBox = [[centerPt[0] - 50, centerPt[0] + 50], [centerPt[1] - 50, centerPt[1] + 50]];
   detectionBox = [[centerPt[0] - (width + radius), centerPt[0] + (width + radius)],[centerPt[1] - (height + radius), centerPt[1] + (height + radius)]];
   circle.data(data).enter().append("circle");
 
-  drone.data(centerPt).enter().append("image");
+  drone.data(dronePt).enter().append("image");
 
   createWarnings(currCorner);
 
@@ -108,17 +107,31 @@ function zoom() {
     .attr("transform", transform)
 
   container.append("ellipse")
-    .attr("rx", function(d) { return Math.min(2000/(d[2] + 1), 25);})
-    .attr("ry", function(d) { return Math.min(2000/(d[2] + 1), 25); })
+    .attr("rx", function(d) { return Math.min(2000/(d[2] + 1), radius);})
+    .attr("ry", function(d) { return Math.min(2000/(d[2] + 1), radius); })
     .style("fill", "red")
-    .style("fill-opacity", .5);
+    .style("fill-opacity", .7);
 
   container.append("text")
-    .attr("x", -4)
-    .attr("y", 3)
-    .attr("font-size", 10)
+    .attr("x", function(d) { return -1*Math.min(1000/(d[2] + 1), 7);})
+    .attr("y", function(d) { return Math.min(700/(d[2] + 1), 5);})
+    .attr("font-size", function(d) { return Math.min(2000/(d[2] + 1), 17);})
     .text(function(d){ return parseInt(d[2]); })
-    .style("fill", "black");
+    .style("fill", "white")
+    .style("font-weight", "bold");
+
+// svg.append("line").attr("x1", x(250)).attr("y1", y(250)).attr("x2", x(width/2)).attr("y2", y(height/2)).attr("stroke", "gray")
+//     .attr("stroke-width", 3)
+//     .attr("stroke-dasharray", "4, 3");
+
+//   svg.selectAll("line").data(inrange).append("line")
+//     .attr("stroke", "gray")
+//     .attr("stroke-width", 3)
+//     .attr("stroke-dasharray", "4, 3")
+//     .attr("x1", x(0))
+//     .attr("y1", y(0))
+//     .attr("x2", function(d) { return x(1000); })
+//     .attr("y2", function(d) { return y(1100); });
 
   // obstacle selections
   circle.attr("transform", transform);
