@@ -1,17 +1,31 @@
 (function() {
   angular
     .module('app')
-    .directive('obstacleMap', function() {
+    .directive('obstacleMap', ['$window', function($window) {
       return {
         restrict: 'E',
         template: '<div class="obstacle-map-container"></div>',
         replace: true,
         link: function(scope, elem, attrs) {
-          var w = elem[0].offsetWidth;
-          var h = elem[0].offsetHeight;
+          var render = function() {
+            var width = elem[0].offsetWidth; //$window.innerWidth;
+            var height = elem[0].offsetHeight; //$window.innerHeight - 50;
 
-          renderObstacleMap('.' + elem.attr('class'), w, h);
+            renderObstacleMap('.' + elem.attr('class'), width, height);
+          }
+
+          var w = angular.element($window);
+          var resizeTimer;
+
+          w.bind('resize', function () {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function() {
+              render();
+            }, 250);
+          });
+
+          render();
         }
       };
-    });
+    }]);
 })();

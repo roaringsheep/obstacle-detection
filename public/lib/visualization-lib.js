@@ -39,6 +39,8 @@
         .domain([0, height])
         .range([height, 0]);
 
+    d3.selectAll('svg').remove();
+
     var svg = d3.select(element).append("svg")
         .attr("width", width)
         .attr("height", height)
