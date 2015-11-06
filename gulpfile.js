@@ -19,10 +19,10 @@ gulp.task('clean-css', function() {
 
 gulp.task('js', ['clean-js'], function() {
   return gulp.src('public/js/**/*.js')
-    .pipe(sourcemaps.init())
+    //.pipe(sourcemaps.init())
     .pipe(babel())
     .pipe(concat('app.js'))
-    .pipe(sourcemaps.write('.'))
+    //.pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('./public/dist/js/'));
 });
 

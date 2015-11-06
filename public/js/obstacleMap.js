@@ -7,7 +7,10 @@
         template: '<div class="obstacle-map-container"></div>',
         replace: true,
         link: function(scope, elem, attrs) {
-          renderObstacleMap('.obstacle-map-container');
+          var w = elem[0].offsetWidth;
+          var h = elem[0].offsetHeight;
+
+          renderObstacleMap('.' + elem.attr('class'), w, h);
         }
       };
     });
