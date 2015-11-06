@@ -8,8 +8,8 @@
         replace: true,
         link: function(scope, elem, attrs) {
           var render = function() {
-            var width = elem[0].offsetWidth; //$window.innerWidth;
-            var height = elem[0].offsetHeight; //$window.innerHeight - 50;
+            var width = elem[0].offsetWidth;
+            var height = elem[0].offsetHeight;
 
             renderObstacleMap('.' + elem.attr('class'), width, height);
           }
