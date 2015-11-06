@@ -2,11 +2,22 @@ var gulp = require('gulp');
 var concat = require('gulp-concat');
 var babel = require('gulp-babel');
 var sourcemaps = require('gulp-sourcemaps');
+var del = require('del');
 
 var sass = require('gulp-sass');
 var autoprefixer = require('gulp-autoprefixer');
 
-gulp.task('js', function () {
+gulp.task('clean-js', function() {
+  // You can use multiple globbing patterns as you would with `gulp.src`
+  return del(['./public/dist/js']);
+});
+
+gulp.task('clean-css', function() {
+  // You can use multiple globbing patterns as you would with `gulp.src`
+  return del(['./public/dist/css']);
+});
+
+gulp.task('js', ['clean-js'], function() {
   return gulp.src('public/js/**/*.js')
     .pipe(sourcemaps.init())
     .pipe(babel())
@@ -19,7 +30,7 @@ gulp.task('watch-js', function() {
   gulp.watch('./public/js/**/*.js', ['js']);
 });
 
-gulp.task('css', function () {
+gulp.task('css', ['clean-css'], function () {
   gulp.src('./public/css/**/*.scss')
     .pipe(sass().on('error', sass.logError))
     .pipe(autoprefixer({
