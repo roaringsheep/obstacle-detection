@@ -1,3 +1,4 @@
+var d3 = require('d3');
 var chai = require('chai'),
     sinon = require('sinon'),
     sinonChai = require("sinon-chai"),
@@ -6,33 +7,29 @@ var chai = require('chai'),
     chai.use(sinonChai);
 
 describe('obstacle detection h.u.d.', function() {
-  var $rootScope,
-      spy;
+  var element, compiledElement;
 
   beforeEach(angular.mock.module('app'));
 
-  beforeEach(inject(function(_$rootScope_) {
-    $rootScope = _$rootScope_;
+  beforeEach(inject(function($rootScope, $compile) {
+    element = angular.element('<obstacle-map></obstacle-map>');
+    compiledElement = $compile(element)($rootScope.$new());
+    $rootScope.$digest();
   }));
 
-  beforeEach(function() {
-    spy = {
-      method : sinon.spy(),
-    };
+  it('should render the containing div', function() {
+    expect(compiledElement).to.not.be.null;
+
+    expect(compiledElement.attr('class')).to.contain('obstacle-map-container');
   });
 
-  beforeEach(function () { clock = sinon.useFakeTimers(); });
-
-  it("should resize to it's container", function() {
-
-  });
+  it("should resize to it's container", inject(function($compile, $rootScope) {
+  }));
 
   it("should pan viewport with mouse click and drag", function() {
-
   });
 
   it("should pan viewport with touch drag", function() {
-
   });
 
   it("should zoom viewport with mouse scroll-wheel", function() {

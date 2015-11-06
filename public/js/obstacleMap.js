@@ -1,7 +1,7 @@
 (function() {
   angular
     .module('app')
-    .directive('obstacleMap', ['$window', function($window) {
+    .directive('obstacleMap', ['$window', '$timeout', function($window, $timeout) {
       return {
         restrict: 'E',
         template: '<div class="obstacle-map-container"></div>',
@@ -18,8 +18,8 @@
           var resizeTimer;
 
           w.bind('resize', function () {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(function() {
+            $timeout.clear(resizeTimer);
+            resizeTimer = $timeout(function() {
               render();
             }, 250);
           });

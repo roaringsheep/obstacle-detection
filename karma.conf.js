@@ -9,6 +9,7 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       'public/lib/angular.min.js',
+      'public/lib/d3.v3.min.js',
       'public/lib/visualization-lib.js',
       'node_modules/angular-mocks/angular-mocks.js',
       'public/dist/js/*.js',
@@ -36,10 +37,10 @@ module.exports = function(config) {
 
     plugins: [
       'karma-browserify',
+      'karma-mocha',
       'karma-chai',
       'karma-sinon',
       'karma-sinon-chai',
-      'karma-mocha',
       'karma-phantomjs-launcher'
     ]
   });
