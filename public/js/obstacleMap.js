@@ -11,7 +11,7 @@
             var width = elem[0].offsetWidth;
             var height = elem[0].offsetHeight;
 
-            renderObstacleMap('.' + elem.attr('class'), width, height);
+            renderObstacleMap(elem[0], width, height);
           }
 
           var w = angular.element($window);

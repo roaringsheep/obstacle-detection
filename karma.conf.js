@@ -27,7 +27,7 @@ module.exports = function(config) {
 
     singleRun: false,
 
-    browsers: ['PhantomJS'],
+    browsers: ['Chrome'],
 
     logLevel: config.LOG_INFO,
 
@@ -41,7 +41,7 @@ module.exports = function(config) {
       'karma-chai',
       'karma-sinon',
       'karma-sinon-chai',
-      'karma-phantomjs-launcher'
+      'karma-chrome-launcher'
     ]
   });
 };
