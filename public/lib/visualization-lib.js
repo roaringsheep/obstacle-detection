@@ -73,6 +73,11 @@
         .attr("height", droneHeight + "px")
         .attr("width", droneWidth + "px");
 
+    // collision detection
+    var force = d3.layout.force()
+        .gravity(0)
+        .charge(-30);
+
     var currCorner,
         centerPt = [],
         viewBox = [],
@@ -83,12 +88,21 @@
     circle.style("stroke", randomColor);
     circle.style("fill", randomColor);
 
+    force.on("tick", function (e) {
+      var quad = d3.geom.quadtree(inrange);
+      inrange.forEach(function (node) {
+        quad.visit(collide(node));
+      });
+    });
+
     function createWarnings(currCorner) {
       circle.data().forEach(function (datum) {
         if (inTheBox(datum, detectionBox) && !inTheBox(datum, viewBox)) {
           inrange.push(makeWarningData(datum, currCorner, findRegion(datum, viewBox)));
         }
       });
+      force.nodes(inrange);
+      force.start()
     }
 
     function setProximityAlert(visible) {
@@ -263,6 +277,10 @@
       return x > box[0][0] && x < box[0][1] && y > box[1][0] && y < box[1][1];
     }
 
+    function warningRadius(distance) {
+      return Math.min(2000/(distance + 1), radius);
+    }
+
     function inRadiusSquared (point, radiusSquared) {
       var scaledX = scaleX(point[0]),
           scaledY = scaleY(point[1]),
@@ -274,5 +292,27 @@
     function transform(d, i) {
       return "translate(" + scaleX(d[0]) + "," + scaleY(d[1]) + ")";
     }
+
+    function collide(node) {
+      return function (quad, x0, y0, x1, y1) {
+
+        // collision -- move node
+        if (quad.point && (quad.point !== node)) {
+          var nodeRadius = warningRadius(node[2]),
+              pointRadius = warningRadius(quad.point[2]),
+              x = scaleX(node[0]) - scaleX(quad.point[0]),
+              y = scaleY(node[1]) - scaleY(quad.point[1]),
+              l = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)),
+              isCollision = (l < (nodeRadius + pointRadius));
+
+          if (isCollision) {
+            // console.log("collision!", node, quad.point, viewBox);
+            var region = findRegion(node, viewBox);
+          }
+        }
+        return isCollision;
+      }
+    }
+
   };
 })();
