@@ -18,7 +18,7 @@
           var resizeTimer;
 
           w.bind('resize', function () {
-            $timeout.clear(resizeTimer);
+            $timeout.cancel(resizeTimer);
             resizeTimer = $timeout(function() {
               render();
             }, 250);
