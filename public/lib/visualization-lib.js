@@ -35,11 +35,11 @@
       ];
     });
 
-    var x = d3.scale.linear()
+    var scaleX = d3.scale.linear()
         .domain([0, width])
         .range([width, 0]);
 
-    var y = d3.scale.linear()
+    var scaleY = d3.scale.linear()
         .domain([0, height])
         .range([height, 0]);
 
@@ -50,7 +50,7 @@
         .attr("height", height)
         .append("g")
         .attr("class", "zoom-container")
-        .call(d3.behavior.zoom().x(x).y(y).scale(1).scaleExtent([1, 1])
+        .call(d3.behavior.zoom().x(scaleX).y(scaleY).scale(1).scaleExtent([1, 1])
         .on("zoom", zoom));
 
     var rect = svg.append("rect")
@@ -270,15 +270,15 @@
     }
 
     function inRadiusSquared (point, radiusSquared) {
-      var scaledX = x(point[0]),
-          scaledY = y(point[1]),
+      var scaledX = scaleX(point[0]),
+          scaledY = scaleY(point[1]),
           offsetX = scaledX - centerX,
           offsetY = scaledY - centerY;
       return ((Math.pow(offsetX, 2) + Math.pow(offsetY, 2)) < radiusSquared);
     }
 
     function transform(d, i) {
-      return "translate(" + x(d[0]) + "," + y(d[1]) + ")";
+      return "translate(" + scaleX(d[0]) + "," + scaleY(d[1]) + ")";
     }
   };
 })();
