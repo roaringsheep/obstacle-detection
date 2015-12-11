@@ -109,11 +109,8 @@
     }
 
     function checkProximity() {
-      var shouldAlert = false;
-      d3.selectAll(".object").each(function (datum) {
-        if (inTheBox(datum, viewBox) && inRadiusSquared(datum, proximityRadiusSquared)) {
-          shouldAlert = true;
-        }
+      var shouldAlert = d3.selectAll(".object").data().some(function (datum) {
+        return (inTheBox(datum, viewBox) && inRadiusSquared(datum, proximityRadiusSquared));
       });
       setProximityAlert(shouldAlert);
     }
