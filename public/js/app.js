@@ -18,7 +18,10 @@
             randomX(),
             randomY()
           ];
-        })
+        }),
+        options: {
+          proximityRadius: 150
+        }
       }
 
     }]);
