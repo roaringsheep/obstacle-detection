@@ -1,39 +1,30 @@
 (function() {
   "use strict";
 
-  window.renderObstacleMap = window.renderObstacleMap || function(element, w, h, r, dH, dW, pR) {
-    var randomX = function() { return parseInt(Math.random() * 3000); },
-        randomY = function() { return parseInt(Math.random() * 3000); },
-        randomR = function() { return parseInt(Math.random() * 50); }
+  function randomColor(d, i) {
+    var hex = ['a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    var color = "";
 
-    var randomColor = function(d, i) {
-      var hex = ['a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-      var color = "";
+    while (color.length < 6) {
+      var rando = parseInt(Math.random() * 16);
+      color = color + hex[rando];
+    }
 
-      while(color.length < 6) {
-        var rando = parseInt(Math.random()*16);
-        color = color + hex[rando];
-      }
+    return '#' + color;
+  }
 
-      return '#' + color;
-    };
+  window.renderObstacleMap = window.renderObstacleMap || function(element, data, options) {
 
-    var width = w || 960,
-        height = h || 500,
-        radius = r || 20,
-        droneHeight = dH || 50,
-        droneWidth = dW || 50,
-        proximityRadius = pR || 130,
+    var opts = options || {},
+        width = opts.width || 960,
+        height = opts.height || 500,
+        radius = opts.radius || 20,
+        droneHeight = opts.droneHeight || 50,
+        droneWidth = opts.droneWidth || 50,
+        proximityRadius = opts.proximityRadius || 130,
         proximityRadiusSquared = Math.pow(proximityRadius, 2),
         centerX = width / 2,
         centerY = height / 2;
-
-    var data = d3.range(50).map(function() {
-      return [
-        randomX(),
-        randomY()
-      ];
-    });
 
     var scaleX = d3.scale.linear()
         .domain([0, width])
@@ -140,9 +131,10 @@
       viewBox = [[centerPt[0] - (width/2) - radius, centerPt[0] + (width/2) + radius], [centerPt[1] - (height/2) - radius, centerPt[1] + (height/2) + radius]];
       var smallBox = [[centerPt[0] - 50, centerPt[0] + 50], [centerPt[1] - 50, centerPt[1] + 50]];
       detectionBox = [[centerPt[0] - (width + radius), centerPt[0] + (width + radius)],[centerPt[1] - (height + radius), centerPt[1] + (height + radius)]];
-      circle.data(data).enter().append("circle");
 
-      drone.data(dronePt).enter().append("image");
+      // don't think these are necessary
+      // circle.data(data).enter().append("circle");
+      // drone.data(dronePt).enter().append("image");
 
       createWarnings(currCorner);
 
