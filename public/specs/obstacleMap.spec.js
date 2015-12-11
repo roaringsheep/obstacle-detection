@@ -10,10 +10,28 @@ var chai = require('chai'),
 describe('obstacle detection h.u.d.', function() {
   var element, compiledElement;
 
+  var randomX = function() { return parseInt(Math.random() * 3000); },
+      randomY = function() { return parseInt(Math.random() * 3000); },
+      randomR = function() { return parseInt(Math.random() * 50); }
+
+  function range(n) {
+    return Array.apply(null, Array(n)).map(function (_, i) { return i; });
+  }
+
   beforeEach(angular.mock.module('app'));
 
   beforeEach(inject(function($rootScope, $compile, $timeout) {
-    element = angular.element('<obstacle-map></obstacle-map>');
+
+    $rootScope.obstacleMap = {
+      data: range(50).map(function() {
+        return [
+          randomX(),
+          randomY()
+        ];
+      })
+    }
+
+    element = angular.element('<obstacle-map om-data="obstacleMap.data"></obstacle-map>');
     compiledElement = $compile(element)($rootScope.$new());
     $rootScope.$digest();
   }));
