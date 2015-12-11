@@ -287,8 +287,6 @@
 
     function collide(node) {
       return function (quad, x0, y0, x1, y1) {
-
-        // collision -- move node
         if (quad.point && (quad.point !== node)) {
           var nodeRadius = warningRadius(node[2]),
               pointRadius = warningRadius(quad.point[2]),
@@ -298,8 +296,7 @@
               isCollision = (l < (nodeRadius + pointRadius));
 
           if (isCollision) {
-            // console.log("collision!", node, quad.point, viewBox);
-            var region = findRegion(node, viewBox);
+            // collision between node and quad.point (both are warning datums)
           }
         }
         return isCollision;
