@@ -17,12 +17,9 @@
             var data = scope.data || {},
                 opts = scope.options || {};
 
-            if (opts.width !== undefined) {
-              opts.width = elem[0].offsetWidth;
-            }
-            if (opts.height !== undefined) {
-              opts.height = elem[0].offsetHeight;
-            }
+            // keep width and height in sync
+            opts.width = elem[0].offsetWidth;
+            opts.height = elem[0].offsetHeight;
 
             renderObstacleMap(elem[0], scope.data, opts);
           }
