@@ -1,7 +1,7 @@
 (function() {
   "use strict";
 
-  window.renderObstacleMap = window.renderObstacleMap || function(element, w, h, r, dH, dW) {
+  window.renderObstacleMap = window.renderObstacleMap || function(element, w, h, r, dH, dW, pR) {
     var randomX = function() { return parseInt(Math.random() * 3000); },
         randomY = function() { return parseInt(Math.random() * 3000); },
         randomR = function() { return parseInt(Math.random() * 50); }
@@ -22,7 +22,11 @@
         height = h || 500,
         radius = r || 20,
         droneHeight = dH || 50,
-        droneWidth = dW || 50;
+        droneWidth = dW || 50,
+        proximityRadius = pR || 130,
+        proximityRadiusSquared = Math.pow(proximityRadius, 2),
+        centerX = width / 2,
+        centerY = height / 2;
 
     var data = d3.range(50).map(function() {
       return [
@@ -54,16 +58,17 @@
         .attr("width", width)
         .attr("height", height);
 
-    var circle = svg.selectAll("circle")
+    var circle = svg.selectAll(".object")
         .data(data)
         .enter().append("circle")
+        .attr("class", "object")
         .attr("r", radius)
         .attr("transform", transform);
 
     var drone = svg.selectAll(".drone")
-        .data([width / 2, height / 2])
+        .data([centerX, centerY])
         .enter().append("image")
-        .attr("transform","translate(" + (width / 2 - droneWidth / 2)+ "," + (height / 2 - droneHeight / 2) + ")")
+        .attr("transform","translate(" + (centerX - droneWidth / 2)+ "," + (centerY - droneHeight / 2) + ")")
         .attr("xlink:href","./css/images/drone.png")
         .attr("height", droneHeight + "px")
         .attr("width", droneWidth + "px");
@@ -80,12 +85,39 @@
     circle.style("fill", randomColor);
 
     function createWarnings(currCorner) {
-      circle.data().forEach(function(datum) {
+      circle.data().forEach(function (datum) {
         if (inTheBox(datum, detectionBox) && !inTheBox(datum, viewBox)) {
           inrange.push(makeWarningData(datum, currCorner, findRegion(datum, viewBox)));
           howmany++;
         }
       });
+    }
+
+    function setProximityAlert(visible) {
+      var proximityData = [[proximityRadius, proximityRadius]];
+      if (visible) {
+        svg.selectAll(".proximityAlert")
+          .data(proximityData)
+          .enter()
+          .append("circle")
+          .attr("class", "proximityAlert")
+          .attr("r", proximityRadius)
+          .attr("transform","translate(" + centerX + "," + centerY + ")")
+          .style("fill", "red")
+          .style("fill-opacity", .4);
+      } else {
+        svg.selectAll(".proximityAlert").remove()
+      }
+    }
+
+    function checkProximity() {
+      var shouldAlert = false;
+      d3.selectAll(".object").each(function (datum) {
+        if (inTheBox(datum, viewBox) && inRadiusSquared(datum, proximityRadiusSquared)) {
+          shouldAlert = true;
+        }
+      });
+      setProximityAlert(shouldAlert);
     }
 
     function zoom() {
@@ -126,6 +158,9 @@
         .style("font-weight", "bold");
 
       circle.attr("transform", transform);
+
+      // will trigger proximity alert if any object with proximityRadius
+      checkProximity();
     }
 
     function calculateDistance(currCorner, circlePts) {
@@ -175,7 +210,9 @@
           x0 = currCorner[0],
           x1 = currCorner[0] + width,
           y0 = currCorner[1],
-          y1 = currCorner[1] + height, warnPt;
+          y1 = currCorner[1] + height,
+          warnPt;
+
       switch (region) {
         case 'UpperRight':
           warnPt = [x0 + 15, y1 - 15];
@@ -230,6 +267,14 @@
     function inTheBox (point, box) {
       var x = point[0], y = point[1];
       return x > box[0][0] && x < box[0][1] && y > box[1][0] && y < box[1][1];
+    }
+
+    function inRadiusSquared (point, radiusSquared) {
+      var scaledX = x(point[0]),
+          scaledY = y(point[1]),
+          offsetX = scaledX - centerX,
+          offsetY = scaledY - centerY;
+      return ((Math.pow(offsetX, 2) + Math.pow(offsetY, 2)) < radiusSquared);
     }
 
     function transform(d, i) {
