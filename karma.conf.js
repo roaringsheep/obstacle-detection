@@ -9,9 +9,9 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       'public/lib/angular.min.js',
+      'node_modules/angular-mocks/angular-mocks.js',
       'public/lib/d3.v3.min.js',
       'public/lib/visualization-lib.js',
-      'node_modules/angular-mocks/angular-mocks.js',
       'public/dist/js/*.js',
       'public/specs/**/*.js',
       'public/index.html'

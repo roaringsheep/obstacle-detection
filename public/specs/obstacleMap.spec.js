@@ -2,7 +2,8 @@ var d3 = require('d3');
 var chai = require('chai'),
     sinon = require('sinon'),
     sinonChai = require("sinon-chai"),
-    expect = chai.expect;
+    expect = chai.expect,
+    angular = require("angular");
 
     chai.use(sinonChai);
 
