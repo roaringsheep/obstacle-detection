@@ -78,7 +78,6 @@
         viewBox = [],
         detectionBox = [],
         inrange = [],
-        howmany,
         region;
 
     circle.style("stroke", randomColor);
@@ -88,7 +87,6 @@
       circle.data().forEach(function (datum) {
         if (inTheBox(datum, detectionBox) && !inTheBox(datum, viewBox)) {
           inrange.push(makeWarningData(datum, currCorner, findRegion(datum, viewBox)));
-          howmany++;
         }
       });
     }
@@ -125,7 +123,6 @@
 
       svg.selectAll("g").data(inrange).exit().remove();
 
-      howmany = 0;
       currCorner = d3.event.translate;
       centerPt = [currCorner[0] + (width/2), currCorner[1] + (height/2), radius];
       var dronePt = [centerPt[0] - droneWidth/2, centerPt[1] + droneHeight/2];
