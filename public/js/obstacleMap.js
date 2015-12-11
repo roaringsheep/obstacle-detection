@@ -8,15 +8,23 @@
         template: '<div class="obstacle-map-container"></div>',
         replace: true,
         scope: {
-          data: "=omData"
+          data: "=omData",
+          options: "=omOptions"
         },
         link: function(scope, elem, attrs) {
 
           var render = function() {
-            var width = elem[0].offsetWidth;
-            var height = elem[0].offsetHeight;
+            var data = scope.data || {},
+                opts = scope.options || {};
 
-            renderObstacleMap(elem[0], scope.data, {width: width, height: height});
+            if (opts.width !== undefined) {
+              opts.width = elem[0].offsetWidth;
+            }
+            if (opts.height !== undefined) {
+              opts.height = elem[0].offsetHeight;
+            }
+
+            renderObstacleMap(elem[0], scope.data, opts);
           }
 
           var w = angular.element($window);
